@@ -3,6 +3,7 @@
 namespace App\Livewire\Backend\Student;
 
 use App\Enums\StudentStatus;
+use App\Services\CertificateService;
 use App\Services\StudentService;
 use App\Traits\Livewire\WithDataTable;
 use App\Traits\Livewire\WithNotification;
@@ -22,10 +23,12 @@ class Index extends Component
     protected $listeners = ['studentCreated' => '$refresh', 'studentUpdated' => '$refresh'];
 
     protected StudentService $service;
+    protected CertificateService $certificateService;
 
-    public function boot(StudentService $service)
+    public function boot(StudentService $service, CertificateService $certificateService): void
     {
         $this->service = $service;
+        $this->certificateService = $certificateService;
     }
 
     public function render()
@@ -145,9 +148,18 @@ class Index extends Component
         ]);
     }
 
-    public function downloadCertificate($encryptedId): void
+    public function downloadCertificate($encryptedId)
     {
         $studentId = decrypt($encryptedId);
+        $student = $this->service->findData($studentId);
+        if (!$student) {
+            return $this->error('Student not found');
+        }
+
+        $pdfContent = $this->certificateService->downloadCertificate($student);
+        $fileName = 'certificate-' . $student->name . '.pdf';
+
+        $this->dispatch('download-pdf', base64_encode($pdfContent), $fileName);
     }
 
     public function confirmDelete($encryptedId): void
@@ -164,7 +176,7 @@ class Index extends Component
             $data = $this->service->findData($studentId);
             $status = $data->status == StudentStatus::ACTIVE ? StudentStatus::INACTIVE : StudentStatus::ACTIVE;
 
-            $data->update(['status'=>$status]);
+            $data->update(['status' => $status]);
 
 
             $this->success('Data status updated successfully');

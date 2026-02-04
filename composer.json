@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "dompdf/dompdf": "^3.1",
         "laravel/framework": "^12.0",
         "laravel/scout": "^10.20",
         "laravel/socialite": "^5.23",
@@ -18,6 +19,7 @@
         "livewire/volt": "^1.7.0",
         "owen-it/laravel-auditing": "^14.0",
         "spatie/laravel-sitemap": "^7.3",
+        "tecnickcom/tcpdf": "^6.10",
         "tinymce/tinymce": "^8.2"
     },
     "require-dev": {

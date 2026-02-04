@@ -34,4 +34,16 @@
     <x-ui.confirmation-modal :show="'showBulkActionModal'" title="{{ __('Confirm Bulk Action') }}"
         message="{{ __('Are you sure you want to perform this action on ' . count($selectedIds) . ' selected student(s)?') }}"
         :method="'executeBulkAction'" button-text="{{ __('Confirm Action') }}" />
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('download-pdf', (base64Data, fileName) => {
+                const link = document.createElement('a');
+                link.href = 'data:application/pdf;base64,' + base64Data;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        });
+    </script>
 </section>
